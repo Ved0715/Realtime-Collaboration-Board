@@ -15,6 +15,11 @@ class MessageCreate(MessageBase):
     pass
 
 
+class MessageUpdate(BaseModel):
+    """Schema for updating a message."""
+    content: str = Field(..., min_length=1, max_length=5000)
+
+
 class MessageResponse(MessageBase):
     """Schema for message in responses."""
     id: int
