@@ -86,12 +86,12 @@ async def metrics():
 
 
 # Include API routers
-from app.api import auth
+from app.api import auth, rooms
 
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
+app.include_router(rooms.router, prefix="/api/rooms", tags=["Rooms"])
 
 # TODO: Add more API routers
-# app.include_router(rooms_router, prefix="/api/rooms", tags=["Rooms"])
 # app.include_router(messages_router, prefix="/api/messages", tags=["Messages"])
 # app.include_router(websocket_router, prefix="/ws", tags=["WebSocket"])
 
