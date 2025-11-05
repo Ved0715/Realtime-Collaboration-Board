@@ -20,18 +20,24 @@ async def lifespan(app: FastAPI):
     await init_db()
     print("✅ Database initialized")
 
-    # TODO: Initialize Redis connection pool
+    # Initialize Redis connection
+    from app.websocket.redis_pubsub import redis_manager
+    print("📊 Initializing Redis connection...")
+    await redis_manager.connect()
+    print("✅ Redis connected")
 
     yield
 
     # Shutdown
     print(f"🛑 {settings.APP_NAME} shutting down...")
 
+    # Close Redis connections
+    await redis_manager.disconnect()
+    print("✅ Redis connections closed")
+
     # Close database connections
     await engine.dispose()
     print("✅ Database connections closed")
-
-    # TODO: Close Redis connections
 
 
 app = FastAPI(
@@ -86,12 +92,13 @@ async def metrics():
 
 
 # Include API routers
-from app.api import auth, rooms, messages, notes
+from app.api import auth, rooms, messages, notes, websocket
 
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(rooms.router, prefix="/api/rooms", tags=["Rooms"])
 app.include_router(messages.router, prefix="/api", tags=["Messages"])
 app.include_router(notes.router, prefix="/api", tags=["Notes"])
+app.include_router(websocket.router, tags=["WebSocket"])
 
 # TODO: Add more API routers
 # app.include_router(messages_router, prefix="/api/messages", tags=["Messages"])
